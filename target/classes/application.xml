@@ -10,16 +10,21 @@
 
 	<context:property-placeholder
 		location="/database.properties" />
-	<!-- bean definitions here -->
-	<bean class="org.springframework.jdbc.core.JdbcTemplate">
-		<constructor-arg name="datasource">
-			<bean class="com.mysql.cj.jdbc.MysqlConnectionPoolDataSource">
-				<property name="url" value="${db.url}"></property>
-				<property name="username" value="${db.username"></property>
-				<property name="password" value="${db.password"></property>
-			</bean>
-		</constructor-arg>
 
-		<constructor-arg name="lazyinit" value="true"></constructor-arg>
+	<bean name="datasource" class="com.mysql.cj.jdbc.MysqlConnectionPoolDataSource">
+		<property name="url" value="${db.url}"></property>
+		<property name="user" value="${db.username}"></property>
+		<property name="password" value="${db.password}"></property>
+	</bean>
+	
+	<bean id="memberDao" class="com.HAH.Jdbc.dao.MemberDao">
+		<constructor-arg ref="template"></constructor-arg>
+	</bean>
+	
+	<bean id="member" class="com.HAH.Jdbc.dto.Member"></bean>
+
+	<bean id="template" class="org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref="datasource"></constructor-arg>
+		<constructor-arg value="true"></constructor-arg>
 	</bean>
 </beans>

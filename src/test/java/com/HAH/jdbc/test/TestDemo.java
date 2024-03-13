@@ -8,7 +8,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import com.HAH.Jdbc.dao.MemberDao;
 import com.HAH.Jdbc.dto.Member;
 
-@SpringJUnitConfig(locations = "/application.xml")
+@SpringJUnitConfig(classes = com.HAH.Jdbc.configuration.MemberConfig.class)
 public class TestDemo {
 	
 	@Autowired

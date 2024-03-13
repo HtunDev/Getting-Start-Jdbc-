@@ -15,12 +15,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>6.1.4</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.29</version>
-		</dependency> 
+		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
@@ -39,6 +39,13 @@
 			<version>6.1.4</version>
 			<scope>test</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.jolbox/bonecp -->
+		<dependency>
+			<groupId>com.jolbox</groupId>
+			<artifactId>bonecp</artifactId>
+			<version>0.8.0.RELEASE</version>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>

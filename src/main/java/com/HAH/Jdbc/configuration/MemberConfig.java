@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.jolbox.bonecp.BoneCPConfig;
@@ -14,7 +15,10 @@ import com.jolbox.bonecp.BoneCPDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 @Configuration
-@PropertySource("/database.properties")
+@PropertySources({
+	@PropertySource("database.properties"),
+	@PropertySource("sql.properties")
+})
 @ComponentScan(basePackages = "com.HAH.Jdbc.dao")
 public class MemberConfig {
 

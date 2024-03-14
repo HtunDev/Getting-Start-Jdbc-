@@ -118,6 +118,7 @@ public class TestDemo {
 			m.setEmail(rs.getString(5));
 			memberData.add(m);
 		});
+		System.out.println(memberData);
 		assertEquals(2, memberData.size());
 	}
 	

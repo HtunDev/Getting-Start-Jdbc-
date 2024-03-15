@@ -26,8 +26,6 @@ public class MemberConfig {
 	@Value("${db.password}")
 	private String password;
 
-	
-
 	@Bean
 	public DataSource getDataSource() {
 		var boneCPConfig = new BoneCPConfig();

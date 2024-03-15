@@ -2,6 +2,7 @@ package com.HAH.jdbc.test;
 
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.HAH.Jdbc.configuration.MemberConfig;
 import com.HAH.Jdbc.dao.configuration.FactoryConfig;
+import com.HAH.Jdbc.dto.Member;
 
 @SpringJUnitConfig(classes = MemberConfig.class)
 @TestMethodOrder(OrderAnnotation.class)
@@ -77,5 +79,28 @@ public class PrepareStatementTest {
 		
 		var creator1 = factory.newPreparedStatementCreator(List.of("member05","member5","Hla Naung","09089977","hlanaung@gmail.com"));	
 		var count1 = jdbcOperations.update(creator1);
+	}
+	
+	@Test
+	@DisplayName("2. Find By Name Like")
+	@Order(3)
+	void test3(@Qualifier("memberFindByNameLike") PreparedStatementCreatorFactory factory) {
+		var creator = factory.newPreparedStatementCreator(List.of("Admin%"));
+		
+		var result = jdbcOperations.execute(creator, stmt -> {
+			List<Member> listM = new ArrayList<>();
+			var rs = stmt.executeQuery();
+			
+			while(rs.next()) {
+				var member = new Member();
+				member.setLoginId(rs.getNString(1));
+				member.setPassword(rs.getString(1));
+				member.setName(rs.getString(1));
+				member.setPhone(rs.getString(1));
+				member.setEmail(rs.getString(1));
+				listM.add(member);
+			}
+			return listM;
+		});
 	}
 }

@@ -68,4 +68,14 @@ public class PrepareStatementTest {
 		var creator1 = factory.newPreparedStatementCreator(List.of("04admin","admin4","Naung Naung","09889977","naung@gmail.com"));	
 		var count1 = jdbcOperations.execute(creator1, PreparedStatement::executeUpdate);
 	}
+	
+	@Test
+	@DisplayName("1. SQL Test")
+	@Order(2)
+	void test2(@Qualifier("memberInserter") PreparedStatementCreatorFactory factory) {
+		// Creation Prepare Statement Creator Factory with spring bean
+		
+		var creator1 = factory.newPreparedStatementCreator(List.of("member05","member5","Hla Naung","09089977","hlanaung@gmail.com"));	
+		var count1 = jdbcOperations.update(creator1);
+	}
 }

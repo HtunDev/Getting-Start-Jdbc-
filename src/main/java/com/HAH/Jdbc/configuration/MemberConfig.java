@@ -15,10 +15,7 @@ import com.jolbox.bonecp.BoneCPDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 @Configuration
-@PropertySources({
-	@PropertySource("database.properties"),
-	@PropertySource("sql.properties")
-})
+@PropertySources({ @PropertySource("database.properties"), @PropertySource("sql.properties") })
 @ComponentScan(basePackages = "com.HAH.Jdbc.dao")
 public class MemberConfig {
 
@@ -28,6 +25,8 @@ public class MemberConfig {
 	private String user;
 	@Value("${db.password}")
 	private String password;
+
+	
 
 	@Bean
 	public DataSource getDataSource() {

@@ -30,13 +30,13 @@ import com.HAH.Jdbc.dto.Member;
 @SpringJUnitConfig(classes = MemberConfig.class)
 @TestMethodOrder(OrderAnnotation.class)
 public class PrepareStatementTest {
-	
+
 	@Autowired
 	JdbcOperations jdbcOperations;
-	
+
 	@Autowired
 	RowMapper<Member> rowMapper;
-	
+
 //	@Test
 //	@DisplayName("1. SQL Test")
 //	@Sql(scripts = "/database.sql")
@@ -66,39 +66,41 @@ public class PrepareStatementTest {
 //		var creator1 = factory.newPreparedStatementCreator(List.of("04admin","admin4","Naung Naung","09889977","naung@gmail.com"));	
 //		var count1 = jdbcOperations.execute(creator1, PreparedStatement::executeUpdate);
 //	}
-	
+
 	@Test
 	@DisplayName("1. SQL Test")
 	@Sql(scripts = "/database.sql")
 	@Order(1)
 	void test1(@Qualifier("memberInserter") PreparedStatementCreatorFactory factory) {
 		// Creation Prepare Statement Creator Factory with spring bean
-		
-		var creator1 = factory.newPreparedStatementCreator(List.of("04admin","admin4","Naung Naung","09889977","naung@gmail.com"));	
+
+		var creator1 = factory.newPreparedStatementCreator(
+				List.of("04admin", "admin4", "Naung Naung", "09889977", "naung@gmail.com"));
 		var count1 = jdbcOperations.execute(creator1, PreparedStatement::executeUpdate);
 	}
-	
+
 	@Test
 	@DisplayName("1. SQL Test")
 	@Order(2)
 	void test2(@Qualifier("memberInserter") PreparedStatementCreatorFactory factory) {
 		// Creation Prepare Statement Creator Factory with spring bean
-		
-		var creator1 = factory.newPreparedStatementCreator(List.of("member05","member5","Hla Naung","09089977","hlanaung@gmail.com"));	
+
+		var creator1 = factory.newPreparedStatementCreator(
+				List.of("member05", "member5", "Hla Naung", "09089977", "hlanaung@gmail.com"));
 		var count1 = jdbcOperations.update(creator1);
 	}
-	
+
 	@Test
 	@DisplayName("2. Find By Name Like")
 	@Order(3)
 	void test3(@Qualifier("memberFindByNameLike") PreparedStatementCreatorFactory factory) {
 		var creator = factory.newPreparedStatementCreator(List.of("Naung%"));
-		
+
 		var result = jdbcOperations.execute(creator, stmt -> {
 			List<Member> listM = new ArrayList<>();
 			var rs = stmt.executeQuery();
-			
-			while(rs.next()) {
+
+			while (rs.next()) {
 				var member = new Member();
 				member.setLoginId(rs.getString(1));
 				member.setPassword(rs.getString(2));
@@ -109,15 +111,15 @@ public class PrepareStatementTest {
 			}
 			return listM;
 		});
-		System.out.println(result); 
+		System.out.println(result);
 		assertEquals(1, result.size());
 	}
-	
+
 	@Test
 	@DisplayName("2. Query With Operation")
 	@Order(4)
 	void test4(@Qualifier("memberFindByNameLike") PreparedStatementCreatorFactory factory) {
-		
+
 		RowMapper<Member> rowMapper = (rs, rowNum) -> {
 			var member = new Member();
 			member.setLoginId(rs.getString(1));
@@ -128,34 +130,52 @@ public class PrepareStatementTest {
 			return member;
 		};
 		var creator = factory.newPreparedStatementCreator(List.of("Naung%"));
-		
+
 		var result = jdbcOperations.query(creator, rowMapper);
-		System.out.println(result); 
+		System.out.println(result);
 		assertEquals(1, result.size());
 	}
-	
+
 	@Test
 	@DisplayName("2. Query With Operation(Row Mapper Spring Bean Class)")
 	@Order(5)
 	void test5(@Qualifier("memberFindByNameLike") PreparedStatementCreatorFactory factory) {
 		var creator = factory.newPreparedStatementCreator(List.of("Naung%"));
-		
+
 		var result = jdbcOperations.query(creator, rowMapper);
 		assertEquals(1, result.size());
 	}
-	
+
 	@Test
 	@DisplayName("2. Query With Operation(Resultset Extractor)")
 	@Order(6)
 	void test6(@Qualifier("memberFindById") PreparedStatementCreatorFactory factory) {
 		var creator = factory.newPreparedStatementCreator(List.of("member05"));
-		
-		var result = jdbcOperations.query(creator, rs ->{
-			while(rs.next()) {
+
+		var result = jdbcOperations.query(creator, rs -> {
+			while (rs.next()) {
 				return rowMapper.mapRow(rs, 1);
 			}
 			return null;
 		});
-		assertEquals("Hla Naung",result.getName());
+		assertEquals("Hla Naung", result.getName());
+	}
+
+	@Test
+	@DisplayName("2. Execute with simple Sql String")
+	@Order(7)
+	void test7(@Value("${member.insert}") String sql) {
+		var count = jdbcOperations.execute(sql, (PreparedStatement stmt) -> {
+			stmt.setString(1, "07member");
+			stmt.setString(2, "member7");
+			stmt.setString(3, "Hsu Lae");
+			stmt.setString(4, "09789862");
+			stmt.setString(5, "ariel@gmail.com");
+			return stmt.executeUpdate();
+		}); 
+
+		System.out.println(count);
+		assertEquals(1, count  );
+
 	}
 }

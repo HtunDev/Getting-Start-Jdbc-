@@ -15,6 +15,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
@@ -215,6 +216,22 @@ public class PrepareStatementTest {
 			return m;
 		};
 		var list = jdbcOperations.query(sql, stmt -> stmt.setString(1, "Hsu%"), rowMapper1);
+		assertEquals(1, list.size());
+	}
+	
+	@Test
+	@DisplayName("11. Query With Simple sql,Row Mappter,Object ...arg")
+	@Order(11)
+	void test11(@Value("${member.select.find.by.name}") String sql) {
+		var list = jdbcOperations.query(sql, rowMapper, "%Moe%");
+		assertEquals(1, list.size());
+	}
+	
+	@Test
+	@DisplayName("11. Query With Simple sql,Row Mappter,Object ...arg")
+	@Order(12)
+	void test12(@Value("${member.select.find.by.name}") String sql) {
+		var list = jdbcOperations.query(sql, new BeanPropertyRowMapper<>(Member.class), "%Moe%");
 		assertEquals(1, list.size());
 	}
 }

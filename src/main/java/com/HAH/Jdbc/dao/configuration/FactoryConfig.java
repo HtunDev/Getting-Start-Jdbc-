@@ -30,4 +30,12 @@ public class FactoryConfig {
 				Types.VARCHAR
 		});
 	}
+	
+	@Bean
+	@Qualifier("memberFindById")
+	public PreparedStatementCreatorFactory memberFindByIdCreatorFactory(@Value("${member.select.find.by.id}") String sql) {
+		return new PreparedStatementCreatorFactory(sql, new int[] {
+				Types.VARCHAR
+		});
+	}
 }

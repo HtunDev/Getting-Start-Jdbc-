@@ -143,4 +143,19 @@ public class PrepareStatementTest {
 		var result = jdbcOperations.query(creator, rowMapper);
 		assertEquals(1, result.size());
 	}
+	
+	@Test
+	@DisplayName("2. Query With Operation(Resultset Extractor)")
+	@Order(6)
+	void test6(@Qualifier("memberFindById") PreparedStatementCreatorFactory factory) {
+		var creator = factory.newPreparedStatementCreator(List.of("member05"));
+		
+		var result = jdbcOperations.query(creator, rs ->{
+			while(rs.next()) {
+				return rowMapper.mapRow(rs, 1);
+			}
+			return null;
+		});
+		assertEquals("Hla Naung",result.getName());
+	}
 }

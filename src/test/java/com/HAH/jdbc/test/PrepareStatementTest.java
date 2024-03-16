@@ -80,7 +80,7 @@ public class PrepareStatementTest {
 	}
 
 	@Test
-	@DisplayName("1. SQL Test")
+	@DisplayName("2. SQL Test")
 	@Order(2)
 	void test2(@Qualifier("memberInserter") PreparedStatementCreatorFactory factory) {
 		// Creation Prepare Statement Creator Factory with spring bean
@@ -91,7 +91,7 @@ public class PrepareStatementTest {
 	}
 
 	@Test
-	@DisplayName("2. Find By Name Like")
+	@DisplayName("3. Find By Name Like")
 	@Order(3)
 	void test3(@Qualifier("memberFindByNameLike") PreparedStatementCreatorFactory factory) {
 		var creator = factory.newPreparedStatementCreator(List.of("Naung%"));
@@ -116,7 +116,7 @@ public class PrepareStatementTest {
 	}
 
 	@Test
-	@DisplayName("2. Query With Operation")
+	@DisplayName("4. Query With Operation")
 	@Order(4)
 	void test4(@Qualifier("memberFindByNameLike") PreparedStatementCreatorFactory factory) {
 
@@ -137,7 +137,7 @@ public class PrepareStatementTest {
 	}
 
 	@Test
-	@DisplayName("2. Query With Operation(Row Mapper Spring Bean Class)")
+	@DisplayName("5. Query With Operation(Row Mapper Spring Bean Class)")
 	@Order(5)
 	void test5(@Qualifier("memberFindByNameLike") PreparedStatementCreatorFactory factory) {
 		var creator = factory.newPreparedStatementCreator(List.of("Naung%"));
@@ -147,7 +147,7 @@ public class PrepareStatementTest {
 	}
 
 	@Test
-	@DisplayName("2. Query With Operation(Resultset Extractor)")
+	@DisplayName("6. Query With Operation(Resultset Extractor)")
 	@Order(6)
 	void test6(@Qualifier("memberFindById") PreparedStatementCreatorFactory factory) {
 		var creator = factory.newPreparedStatementCreator(List.of("member05"));
@@ -162,7 +162,7 @@ public class PrepareStatementTest {
 	}
 
 	@Test
-	@DisplayName("2. Execute with simple Sql String")
+	@DisplayName("7. Execute with simple Sql String")
 	@Order(7)
 	void test7(@Value("${member.insert}") String sql) {
 		var count = jdbcOperations.execute(sql, (PreparedStatement stmt) -> {
@@ -177,5 +177,27 @@ public class PrepareStatementTest {
 		System.out.println(count);
 		assertEquals(1, count  );
 
+	}
+	
+	@Test
+	@DisplayName("8. Update With Simple Statement")
+	@Order(8)
+	void test8(@Value("${member.insert}") String sql) {
+		int count = jdbcOperations.update(sql, stmt ->{
+			stmt.setString(1, "08member");
+			stmt.setString(2, "member8");
+			stmt.setString(3, "Ma Khaing");
+			stmt.setString(4, "0988653");
+			stmt.setString(5, "khaing@gmail.com");
+		});
+		assertEquals(1, count);
+	}
+	
+	@Test
+	@DisplayName("9. Update With Parameter")
+	@Order(9)
+	void test9(@Value("${member.insert}") String sql) {
+		var count = jdbcOperations.update(sql, "09member","member9","U Moe Thein","094498937","mgmoe@gmail.com");
+		assertEquals(1, count);
 	}
 }

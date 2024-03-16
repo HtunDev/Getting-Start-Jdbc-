@@ -200,4 +200,21 @@ public class PrepareStatementTest {
 		var count = jdbcOperations.update(sql, "09member","member9","U Moe Thein","094498937","mgmoe@gmail.com");
 		assertEquals(1, count);
 	}
+	
+	@Test
+	@DisplayName("10. Query With Simple sql")
+	@Order(10)
+	void test10(@Value("${member.select.find.by.name}") String sql) {
+		RowMapper<Member> rowMapper1 = (rs, rowNum) -> {
+			var m = new Member();
+			m.setLoginId(rs.getString(1));
+			m.setPassword(rs.getString(2));
+			m.setName(rs.getString(3));
+			m.setPhone(rs.getString(4));
+			m.setEmail(rs.getString(5));
+			return m;
+		};
+		var list = jdbcOperations.query(sql, stmt -> stmt.setString(1, "Hsu%"), rowMapper1);
+		assertEquals(1, list.size());
+	}
 }

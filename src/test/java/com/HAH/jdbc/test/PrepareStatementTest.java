@@ -1,8 +1,11 @@
 package com.HAH.jdbc.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +20,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.PreparedStatementCallback;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -173,18 +178,18 @@ public class PrepareStatementTest {
 			stmt.setString(4, "09789862");
 			stmt.setString(5, "ariel@gmail.com");
 			return stmt.executeUpdate();
-		}); 
+		});
 
 		System.out.println(count);
-		assertEquals(1, count  );
+		assertEquals(1, count);
 
 	}
-	
+
 	@Test
 	@DisplayName("8. Update With Simple Statement")
 	@Order(8)
 	void test8(@Value("${member.insert}") String sql) {
-		int count = jdbcOperations.update(sql, stmt ->{
+		int count = jdbcOperations.update(sql, stmt -> {
 			stmt.setString(1, "08member");
 			stmt.setString(2, "member8");
 			stmt.setString(3, "Ma Khaing");
@@ -193,15 +198,15 @@ public class PrepareStatementTest {
 		});
 		assertEquals(1, count);
 	}
-	
+
 	@Test
 	@DisplayName("9. Update With Parameter")
 	@Order(9)
 	void test9(@Value("${member.insert}") String sql) {
-		var count = jdbcOperations.update(sql, "09member","member9","U Moe Thein","094498937","mgmoe@gmail.com");
+		var count = jdbcOperations.update(sql, "09member", "member9", "U Moe Thein", "094498937", "mgmoe@gmail.com");
 		assertEquals(1, count);
 	}
-	
+
 	@Test
 	@DisplayName("10. Query With Simple sql")
 	@Order(10)
@@ -218,7 +223,7 @@ public class PrepareStatementTest {
 		var list = jdbcOperations.query(sql, stmt -> stmt.setString(1, "Hsu%"), rowMapper1);
 		assertEquals(1, list.size());
 	}
-	
+
 	@Test
 	@DisplayName("11. Query With Simple sql,Row Mappter,Object ...arg")
 	@Order(11)
@@ -226,12 +231,43 @@ public class PrepareStatementTest {
 		var list = jdbcOperations.query(sql, rowMapper, "%Moe%");
 		assertEquals(1, list.size());
 	}
-	
+
 	@Test
-	@DisplayName("11. Query With Simple sql,Row Mappter,Object ...arg")
+	@DisplayName("12. Query With Simple sql,Bean Propert RowMapper,Object ...arg")
 	@Order(12)
 	void test12(@Value("${member.select.find.by.name}") String sql) {
-		var list = jdbcOperations.query(sql, new BeanPropertyRowMapper<>(Member.class), "%Moe%");
+		var list = jdbcOperations.query(sql, new BeanPropertyRowMapper<>(Member.class), "%Hsu%");
 		assertEquals(1, list.size());
+	}
+
+	@Test
+	@DisplayName("13. Query With Result Set Extractor")
+	@Order(13)
+	void test13(@Value("${member.select.find.by.id}") String sql) {
+		var data = jdbcOperations.query(sql, stmt -> stmt.setString(1, "07member"), rs -> {
+			while (rs.next()) {
+				return rowMapper.mapRow(rs, 1);
+			}
+			return null;
+		});
+		assertNotNull(data);
+	}
+
+	@Test
+	@DisplayName("14. Query With Result Set Extractor, Object ...arg")
+	@Order(14)
+	void test14(@Value("${member.select.find.by.id}") String sql) {
+		ResultSetExtractor<Member> extractor = rs -> {
+			while (rs.next()) {
+				return rowMapper.mapRow(rs, 1);
+			}
+			return null;
+		};
+		var data = jdbcOperations.query(sql, extractor, "member05");
+		assertNotNull(data);
+		System.out.println(data.getLoginId());
+		System.out.println(data.getPassword());
+		System.out.println(data.getName());
+		assertEquals("Hla Naung", data.getName());
 	}
 }

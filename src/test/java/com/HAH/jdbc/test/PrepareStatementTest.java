@@ -270,4 +270,23 @@ public class PrepareStatementTest {
 		System.out.println(data.getName());
 		assertEquals("Hla Naung", data.getName());
 	}
+	
+	@Test
+	@DisplayName("15. QueryForObject With RowMapper,Obj ...args")
+	@Order(15)
+	void test15(@Value("${member.select.find.by.id}") String sql) {
+		var data = jdbcOperations.queryForObject(sql, rowMapper, "09member");
+		System.out.println(data.getName());
+		assertEquals("mgmoe@gmail.com", data.getEmail());
+	}
+	
+	@Test
+	@DisplayName("16. QueryForObject With Single One Param")
+	@Order(16)
+	void test16() {
+		var sql = "select count(*) from member where name like ?";
+		var count = jdbcOperations.queryForObject(sql, Long.class, "%Khaing%");
+		System.out.println(count.getClass());
+		assertEquals(1, count);
+	}
 }
